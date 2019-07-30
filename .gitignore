@@ -1,0 +1,5 @@
+data/*
+work/*
+result/*
+.nextflow*
+nextflow.config
