@@ -122,7 +122,7 @@ process end {
 
    script:
    """
-   sed -i "1 s/^/chr\tpos\tsnp\tREF\tALT\tpv\\n/" ${out}
+   sed -i "1 s/^/chr\tpos\tsnp\tREF\tALT\tr2\tpv\\n/" ${out}
    """
 }
 

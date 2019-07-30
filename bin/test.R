@@ -184,9 +184,9 @@ for (p in geno.df$pos){
   snp <- subset(geno.df, pos == p)
   rec <- snp[, !colnames(snp)%in%subset.ids]
   snp <- as.numeric(snp[, subset.ids])
-  mvfit <- mlm(as.matrix(pheno.df) ~ ., data = data.frame(cov.df, "GT" = as.factor(snp)))
+  mvfit <- mlm(as.matrix(pheno.df) ~ ., data = data.frame(cov.df, "GT" = snp))
   
-  out.df <- rbind(out.df, c(t(rec), mvfit$aov.tab[nrow(mvfit$aov.tab)-1,6]))
+  out.df <- rbind(out.df, c(t(rec), mvfit$aov.tab[nrow(mvfit$aov.tab)-1,c(5,6)]))
 }
 
 ## 6. Write output
