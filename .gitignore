@@ -1,5 +1,9 @@
-data/*
-work/*
-result/*
+clean
+data
+result
+work
+singularity
+docker/.docker
 .nextflow*
-nextflow.config
+trace*
+*log
