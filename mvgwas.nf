@@ -60,22 +60,20 @@ log.info ''
  *  Preprocess VCF
  */
 
-process ppvcf {
+process split {
  
     input:
    
-    file raw_vcf from file(params.geno)
+    file(vcf) from file(params.geno)
+    file(index) from file("${params.geno}.tbi")    
 
     output:
     
-    set file('pp.vcf.gz'), file('pp.vcf.gz.tbi') into ppvcf_ch
     file("chunk*") into chunks_ch    
 
     script:
     """
-    bcftools view -v snps,indels -m 2 -M 2 -q 0.05:minor -Ob $raw_vcf | bcftools norm -d all -Oz -o pp.vcf.gz
-    tabix -p vcf pp.vcf.gz
-    bcftools query -f '%CHROM\t%POS\n' pp.vcf.gz > positions
+    bcftools query -f '%CHROM\t%POS\n' $vcf > positions
     split -d -a 10 -l ${params.l} positions chunk
     """
 }
@@ -90,7 +88,8 @@ process mvgwas {
 
     file pheno from file(params.pheno)
     file cov from file(params.cov)
-    set file(vcf), file(index) from ppvcf_ch
+    file(vcf) from file(params.geno)
+    file(index) from file("${params.geno}.tbi")
     each file (chunk) from chunks_ch
 
     output:
