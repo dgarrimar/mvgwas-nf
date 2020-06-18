@@ -8,10 +8,10 @@
  */
 
 // General params
-params.pheno = 'data/phenotypes.tsv'
-params.geno = 'data/genotypes.vcf.gz'
-params.cov = 'data/covariates.tsv'
-params.l = 10000
+params.pheno = 'data/eg.phenotypes.txt'
+params.geno = 'data/eg.genotypes.vcf.gz'
+params.cov = 'data/eg.covariates.txt'
+params.l = 500
 params.dir = 'result'
 params.out = 'mvgwas.tsv'
 params.help = false
@@ -94,26 +94,27 @@ process mvgwas {
 
     output:
 
-    file('sstats.txt') into sstats_ch
+    file('sstats.*.txt') into sstats_ch
 
     script:
     """
+    chunknb=\$(basename $chunk | sed 's/chunk//')
     if [[ \$(cut -f1 $chunk | sort | uniq -c | wc -l) == 2 ]]; then
         k=1
         cut -f1 $chunk | sort | uniq | while read chr; do
         region=\$(paste <(grep "^\$chr" $chunk | head -1) <(grep "^\$chr" $chunk | tail -1 | cut -f2) | sed 's/\t/:/' | sed 's/\t/-/')
-        test.R --phenotypes $pheno --covariates $cov --genotypes $vcf --region "\$region" --output sstats.\$k.txt --verbose
+        test.R --phenotypes $pheno --covariates $cov --genotypes $vcf --region "\$region" --output sstats.\$k.tmp --verbose
         ((k++))
     done
-    cat sstats.*.txt > sstats.txt
+    cat sstats.*.tmp > sstats.\${chunknb}.txt
     else
         region=\$(paste <(head -1 $chunk) <(tail -1 $chunk | cut -f2) | sed 's/\t/:/' | sed 's/\t/-/')
-        test.R --phenotypes $pheno --covariates $cov --genotypes $vcf --region "\$region" --output sstats.txt --verbose
+        test.R --phenotypes $pheno --covariates $cov --genotypes $vcf --region "\$region" --output sstats.\${chunknb}.txt --verbose
     fi
     """
 }
 
-sstats_ch.collectFile(name: "${params.out}").set{pub_ch}
+sstats_ch.collectFile(name: "${params.out}", sort: { it.name }).set{pub_ch}
 
 /*
  * Summary stats
