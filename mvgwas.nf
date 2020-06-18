@@ -98,8 +98,18 @@ process mvgwas {
 
     script:
     """
-    region=\$(paste <(head -1 $chunk) <(tail -1 $chunk | cut -f2) | sed 's/\t/:/' | sed 's/\t/-/')    
-    test.R --phenotypes $pheno --covariates $cov --genotypes $vcf --region "\$region" --output sstats.txt --verbose
+    if [[ \$(cut -f1 $chunk | sort | uniq -c | wc -l) == 2 ]]; then
+        k=1
+        cut -f1 $chunk | sort | uniq | while read chr; do
+        region=\$(paste <(grep "^\$chr" $chunk | head -1) <(grep "^\$chr" $chunk | tail -1 | cut -f2) | sed 's/\t/:/' | sed 's/\t/-/')
+        test.R --phenotypes $pheno --covariates $cov --genotypes $vcf --region "\$region" --output sstats.\$k.txt --verbose
+        ((k++))
+    done
+    cat sstats.*.txt > sstats.txt
+    else
+        region=\$(paste <(head -1 $chunk) <(tail -1 $chunk | cut -f2) | sed 's/\t/:/' | sed 's/\t/-/')
+        test.R --phenotypes $pheno --covariates $cov --genotypes $vcf --region "\$region" --output sstats.txt --verbose
+    fi
     """
 }
 
