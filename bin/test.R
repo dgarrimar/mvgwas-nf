@@ -55,7 +55,6 @@ rownames(cov.df) <- cov.df$ID
 pheno.df$ID <- cov.df$ID <- NULL
 
 geno.df <- tabix.read.table(geno.f, region)
-colnames(geno.df) <-  gsub("^0+", "", gsub("X[0-9]+_[sS]_([0-9]+)", "\\1",   colnames(geno.df)))
 
 subset.ids <- Reduce(intersect, list(colnames(geno.df),
                                      rownames(pheno.df), rownames(cov.df))) 
