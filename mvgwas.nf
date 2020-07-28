@@ -8,9 +8,9 @@
  */
 
 // General params
-params.pheno = 'data/eg.phenotypes.txt'
-params.geno = 'data/eg.genotypes.vcf.gz'
-params.cov = 'data/eg.covariates.txt'
+params.pheno = null
+params.geno = null
+params.covs = null
 params.l = 500
 params.dir = 'result'
 params.out = 'mvgwas.tsv'
@@ -39,6 +39,20 @@ if (params.help) {
   log.info ''
   exit(1)
 }
+
+/*
+ * Check mandatory parameters
+ */
+
+if (!params.pheno) {
+    exit 1, "Phenotype file not specified."
+} else if (!params.geno){
+    params.help
+    exit 1, "Genotype not specified."
+} else if (!params.cov){
+    exit 1, "Covariate file not specified."
+}
+
 
 /*
  *  Print parameter selection
