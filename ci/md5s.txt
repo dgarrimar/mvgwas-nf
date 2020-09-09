@@ -1,1 +1,1 @@
-108ea9fc53cf3fec6aecb5afda1043c7  ci/mvgwas.tsv
+0f90b6b649d43eeea9a6665c634e0d53  ci/mvgwas.tsv
