@@ -136,7 +136,7 @@ sstats_ch.collectFile(name: "${params.out}", sort: { it.name }).set{pub_ch}
 
 process end {
 
-   publishDir "${params.dir}"     
+   publishDir "${params.dir}", mode: 'copy'     
 
    input:
    file(out) from pub_ch
