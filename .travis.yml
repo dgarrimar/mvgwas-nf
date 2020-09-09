@@ -1,0 +1,17 @@
+dist: trusty
+sudo: required
+
+services:
+  - docker
+
+language: java
+
+jdk:
+  - oraclejdk8
+    
+before_script:
+  - docker pull dgarrimar/simreal@sha256:d492bcea505aa152880b8053ee475d87963650293f7f983f8e24c36f09bef318
+  - curl -fsSL get.nextflow.io | bash && mv nextflow $HOME/bin
+
+script:
+  - ./ci/ci.sh run && ./ci/ci.sh validate
