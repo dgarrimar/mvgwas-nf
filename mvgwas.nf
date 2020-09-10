@@ -11,7 +11,7 @@
 params.pheno = null
 params.geno = null
 params.cov = null
-params.l = 10000
+params.l = 500
 params.ng = 10
 params.dir = 'result'
 params.out = 'mvgwas.tsv'
