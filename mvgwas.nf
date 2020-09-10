@@ -10,7 +10,7 @@
 // General params
 params.pheno = null
 params.geno = null
-params.covs = null
+params.cov = null
 params.l = 500
 params.ng = 10
 params.dir = 'result'
