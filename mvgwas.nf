@@ -12,6 +12,7 @@ params.pheno = null
 params.geno = null
 params.covs = null
 params.l = 500
+params.ng = 10
 params.dir = 'result'
 params.out = 'mvgwas.tsv'
 params.help = false
@@ -34,6 +35,7 @@ if (params.help) {
   log.info ' --geno GENOTYPES            indexed genotype VCF file (default: genotypes.vcf.gz)'
   log.info ' --cov COVARIATES            covariate file (default: covariates.tsv)'
   log.info ' --l VARIANTS/CHUNK          variants tested per chunk (default: 10000)'
+  log.info ' --ng INDIVIDUALS/GENOTYPE   minimum number of individuals per genotype group (default: 10)'        
   log.info ' --dir DIRECTORY             output directory (default: result)'
   log.info ' --out OUTPUT                output file (default: mvgwas.tsv)'
   log.info ''
@@ -65,6 +67,7 @@ log.info "Phenotype data               : ${params.pheno}"
 log.info "Genotype data                : ${params.geno}"
 log.info "Covariates                   : ${params.cov}"
 log.info "Variants/chunk               : ${params.l}"
+log.info "Individuals/genotype         : ${params.ng}" 
 log.info "Output directory             : ${params.dir}"
 log.info "Output file                  : ${params.out}"
 log.info ''
@@ -117,13 +120,13 @@ process mvgwas {
         k=1
         cut -f1 $chunk | sort | uniq | while read chr; do
         region=\$(paste <(grep "^\$chr" $chunk | head -1) <(grep "^\$chr" $chunk | tail -1 | cut -f2) | sed 's/\t/:/' | sed 's/\t/-/')
-        test.R --phenotypes $pheno --covariates $cov --genotypes $vcf --region "\$region" --output sstats.\$k.tmp --verbose
+        test.R --phenotypes $pheno --covariates $cov --genotypes $vcf --region "\$region" --output sstats.\$k.tmp --min_nb_ind_geno ${params.ng} --verbose
         ((k++))
     done
     cat sstats.*.tmp > sstats.\${chunknb}.txt
     else
         region=\$(paste <(head -1 $chunk) <(tail -1 $chunk | cut -f2) | sed 's/\t/:/' | sed 's/\t/-/')
-        test.R --phenotypes $pheno --covariates $cov --genotypes $vcf --region "\$region" --output sstats.\${chunknb}.txt --verbose
+        test.R --phenotypes $pheno --covariates $cov --genotypes $vcf --region "\$region" --output sstats.\${chunknb}.txt --min_nb_ind_geno ${params.ng} --verbose
     fi
     """
 }

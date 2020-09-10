@@ -21,6 +21,8 @@ option_list <- list(
                 help = "Genomic region", metavar = "CHARACTER"),
     make_option(c("-m", "--min_value"), type = "numeric", default = 0,
                 help = "Minimum value of the phenotype [default %default]", metavar = "NUMERIC"),
+    make_option(c("-n",	"--min_nb_ind_geno"), type = "numeric", default = 10,
+       	       	help = "Minimum number of individuals per genotype group"),
     make_option(c("-o", "--output"), type = "character",
                 help = "Output summary stats", metavar = "FILE"),
     make_option(c("-s", "--seed"), type = "numeric", help = "Set seed for random processes",
@@ -167,7 +169,7 @@ check.genotype <- function(geno.df, min.nb.ind.geno = 10)
   })
 }
 
-snps.to.keep <- check.genotype(geno.df[, subset.ids], min.nb.ind.geno = 10)
+snps.to.keep <- check.genotype(geno.df[, subset.ids], min.nb.ind.geno = opt$min_nb_ind_geno)
 
 if(opt$verbose){
   snps.to.keep.t <- table(snps.to.keep)
