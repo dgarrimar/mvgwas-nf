@@ -35,6 +35,46 @@ option_list <- list(
 opt_parser <- OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser)
 
+tabix.read.table.nochecknames <- function (tabixFile, tabixRange, col.names = TRUE, stringsAsFactors = FALSE) 
+{
+  stopifnot(seqminer:::local.file.exists(tabixFile))
+  stopifnot(all(isTabixRange(tabixRange)))
+  tabixFile <- path.expand(tabixFile)
+  storage.mode(tabixFile) <- "character"
+  storage.mode(tabixRange) <- "character"
+  header <- .Call("readTabixHeader", tabixFile, PACKAGE = "seqminer")
+  body <- .Call("readTabixByRange", tabixFile, tabixRange, 
+                PACKAGE = "seqminer")
+  body <- do.call(rbind, strsplit(body, "\t"))
+  body <- as.data.frame(body, stringsAsFactors = FALSE)
+  if (ncol(body) > 0) {
+    for (i in 1:ncol(body)) {
+      body[, i] <- utils::type.convert(body[, i], as.is = !stringsAsFactors)
+    }
+    num.col <- ncol(body)
+    header <- header[nchar(header) > 0]
+    if (length(header) == 0 || !col.names) {
+      colNames <- paste0("V", 1L:num.col)
+    }
+    else {
+      hdrLine <- header[length(header)]
+      hdrLine <- sub("^#", "", hdrLine)
+      # colNames <- make.names(strsplit(hdrLine, "\t")[[1]])
+      colNames <- strsplit(hdrLine, "\t")[[1]]
+      if (length(colNames) > ncol(body)) {
+        colNames <- colNames[1:ncol(body)]
+      }
+      else if (length(colNames) < ncol(body)) {
+        tmpNames <- paste0("V", 1L:num.col)
+        tmpNames[1:length(colNames)] <- colNames
+        colNames <- tmpNames
+      }
+    }
+    colnames(body) <- colNames
+  }
+  body
+}
+
 ## 2. Input files: transcript expression, sample groups, gene location
   
 pheno.f <- opt$phenotypes   
@@ -56,7 +96,7 @@ rownames(pheno.df) <- pheno.df$ID
 rownames(cov.df) <- cov.df$ID
 pheno.df$ID <- cov.df$ID <- NULL
 
-geno.df <- tabix.read.table(geno.f, region)
+geno.df <- tabix.read.table.nochecknames(geno.f, region)
 
 subset.ids <- Reduce(intersect, list(colnames(geno.df),
                                      rownames(pheno.df), rownames(cov.df))) 
