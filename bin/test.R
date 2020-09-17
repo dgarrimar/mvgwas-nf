@@ -111,11 +111,23 @@ colnames(geno.df)[1:5] <- c("chr", "pos", "variant", "REF", "ALT")
 geno.df <- geno.df[,colnames(geno.df) %in% c("chr", "pos", "variant", "REF", "ALT", subset.ids)]
 geno.df[,-c(1:5)] <- apply(geno.df[,-c(1:5)], 2, function(x){y <- gsub("([012.]/[012.]):.*","\\1", x)
 sapply(y, function(z){switch(z,
+                             # Unphased
                              "./." = NA,
                              "0/0" = "0",
                              "1/0" = "1",
                              "0/1" = "1",
-                             "1/1" = "2")})
+                             "1/1" = "2",
+                             # Phased
+                             ".|." = NA,
+                             "0|0" = "0",
+                             "1|0" = "1",
+                             "0|1" = "1",
+                             "1|1" = "2",
+                             # Haploid (X,Y,MT)
+                             "." = NA,
+                             "0" = "0",
+                             "1" = "1"
+                             )})
 })
 
 ## 3. Pre-process phenotypes
