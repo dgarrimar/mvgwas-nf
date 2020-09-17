@@ -116,7 +116,7 @@ process mvgwas {
     script:
     """
     chunknb=\$(basename $chunk | sed 's/chunk//')
-    if [[ \$(cut -f1 $chunk | sort | uniq -c | wc -l) == 2 ]]; then
+    if [[ \$(cut -f1 $chunk | sort | uniq -c | wc -l) -ge 2 ]]; then
         k=1
         cut -f1 $chunk | sort | uniq | while read chr; do
         region=\$(paste <(grep "^\$chr" $chunk | head -1) <(grep "^\$chr" $chunk | tail -1 | cut -f2) | sed 's/\t/:/' | sed 's/\t/-/')
