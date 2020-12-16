@@ -7,6 +7,7 @@
 library(optparse)
 library(data.table)
 library(seqminer)
+library(car)
 library(mlm)
   
 option_list <- list(
@@ -238,7 +239,7 @@ for (p in geno.df$pos){
   rec <- snp[, !colnames(snp)%in%subset.ids]
   snp <- as.numeric(snp[, subset.ids])
   
-  mvfit <- tryCatch(mlm(as.matrix(pheno.df) ~ ., data = data.frame(cov.df, "GT" = snp)),
+  mvfit <- tryCatch(mlm(as.matrix(pheno.df) ~ ., data = data.frame(cov.df, "GT" = snp), type = "I"),
                     error = function(e) NULL)
   if(is.null(mvfit)){
     warning(sprintf("SNP %s skipped",  subset(geno.df, pos == p)$variant))
