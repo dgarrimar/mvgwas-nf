@@ -35,13 +35,10 @@ RUN git clone --depth=1 -b v1.0.0 https://github.com/libgit2/libgit2.git ~/libgi
 ## Install R packages
 RUN R -e 'install.packages("lme4", repos="http://cloud.r-project.org/");'\
 'install.packages("https://cran.r-project.org/src/contrib/Archive/pbkrtest/pbkrtest_0.4-7.tar.gz", repos=NULL, type="source");'\
-'install.packages(c("devtools", "optparse", "data.table", "seqminer", "vegan", "car"), repos="http://cloud.r-project.org/")'
+'install.packages(c("devtools", "optparse", "data.table", "seqminer", "vegan", "car", "R.utils"), repos="http://cloud.r-project.org/")'
 
 ## Install mlm
 RUN R -e 'devtools:::install_github("dgarrimar/mlm")'
-
-## Change ENTRYPOINT
-ENTRYPOINT /bin/bash
 
 ## Install bcftools and HTSlib
 RUN wget --quiet https://github.com/samtools/bcftools/releases/download/1.10.2/bcftools-1.10.2.tar.bz2 \
@@ -55,3 +52,7 @@ RUN cd bcftools-1.10.2/htslib-1.10.2 \
     && ./configure \
     && make \
     && make install
+
+## Change ENTRYPOINT
+ENTRYPOINT /bin/bash
+

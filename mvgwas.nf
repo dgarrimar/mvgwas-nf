@@ -74,13 +74,13 @@ log.info ''
 
 
 /*
- *  Preprocess VCF
+ *  Split VCF
  */
 
 process split {
  
     input:
-   
+
     file(vcf) from file(params.geno)
     file(index) from file("${params.geno}.tbi")    
 
@@ -96,6 +96,28 @@ process split {
 }
 
 /*
+ *  Pre-process phenotypes and covariates
+ */
+
+process preprocess {
+
+    input:
+
+    file(pheno) from file(params.pheno)
+    file(cov) from file(params.cov)
+    file(vcf) from file(params.geno)
+
+    output:
+
+    tuple file("pheno_preproc.tsv.gz"), file("cov_preproc.tsv.gz") into preproc_ch
+    
+    script:
+    """
+    preprocess.R --phenotypes $pheno --covariates $cov --genotypes $vcf --out_pheno pheno_preproc.tsv.gz --out_cov cov_preproc.tsv.gz --verbose
+    """
+}
+
+/*
  *  GWAS: mlm testing
  */
 
@@ -103,11 +125,10 @@ process mvgwas {
 
     input:
 
-    file pheno from file(params.pheno)
-    file cov from file(params.cov)
+    tuple file(pheno), file(cov) from preproc_ch
     file(vcf) from file(params.geno)
     file(index) from file("${params.geno}.tbi")
-    each file (chunk) from chunks_ch
+    each file(chunk) from chunks_ch
 
     output:
 
