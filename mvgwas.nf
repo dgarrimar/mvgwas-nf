@@ -140,7 +140,7 @@ process mvgwas {
     if [[ \$(cut -f1 $chunk | sort | uniq -c | wc -l) -ge 2 ]]; then
         k=1
         cut -f1 $chunk | sort | uniq | while read chr; do
-        region=\$(paste <(grep "^\$chr" $chunk | head -1) <(grep "^\$chr" $chunk | tail -1 | cut -f2) | sed 's/\t/:/' | sed 's/\t/-/')
+        region=\$(paste <(grep -P "^\$chr\t" $chunk | head -1) <(grep -P "^\$chr\t" $chunk | tail -1 | cut -f2) | sed 's/\t/:/' | sed 's/\t/-/')
         test.R --phenotypes $pheno --covariates $cov --genotypes $vcf --region "\$region" --output sstats.\$k.tmp --min_nb_ind_geno ${params.ng} --verbose
         ((k++))
     done
