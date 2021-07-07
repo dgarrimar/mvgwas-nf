@@ -132,7 +132,7 @@ process mvgwas {
 
     output:
 
-    file('sstats.*.txt') into sstats_ch
+    file('sstats.*.txt') optional true into sstats_ch
 
     script:
     """

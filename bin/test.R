@@ -136,7 +136,7 @@ geno.df[, -c(1:5)] <- apply(geno.df[, -c(1:5)], 2, function(x){
                              )})
   })
 
-## 2. Filter SNPs
+## 3. Filter SNPs
 snps.to.keep <- check.genotype(geno.df[, subset.ids], min.nb.ind.geno = opt$min_nb_ind_geno)
 
 if(opt$verbose){
@@ -144,30 +144,25 @@ if(opt$verbose){
   message("\t", paste(names(snps.to.keep.t), snps.to.keep.t, sep = ": ", collapse=", "))
 }
 
+## 4. Test & write output
 if(any(snps.to.keep == "PASS")){
   geno.df <- geno.df[snps.to.keep == "PASS", ]
-}
-
-## 3. Test
-
-out.df <- c()
-for (p in geno.df$pos){
-  snp <- subset(geno.df, pos == p)
-  rec <- snp[, !colnames(snp)%in%subset.ids]
-  snp <- as.numeric(snp[, subset.ids])
-  
-  mvfit <- tryCatch(mlm(as.matrix(pheno.df) ~ ., data = data.frame(cov.df, "GT" = snp), type = "I", subset = "GT"),
-                    error = function(e) NULL)
-  if(is.null(mvfit)){
-    warning(sprintf("SNP %s skipped",  subset(geno.df, pos == p)$variant))
-    next
+  out.df <- c()
+  for (p in geno.df$pos){
+    snp <- subset(geno.df, pos == p)
+    rec <- snp[, !colnames(snp)%in%subset.ids]
+    snp <- as.numeric(snp[, subset.ids])
+    
+    mvfit <- tryCatch(mlm(as.matrix(pheno.df) ~ ., data = data.frame(cov.df, "GT" = snp), type = "I", subset = "GT"),
+                      error = function(e) NULL)
+    if(is.null(mvfit)){
+      warning(sprintf("SNP %s skipped",  subset(geno.df, pos == p)$variant))
+      next
+    }
+    out.df <- rbind(out.df, c(t(rec), mvfit$aov.tab[nrow(mvfit$aov.tab)-1,c(5,6)]))
   }
-  out.df <- rbind(out.df, c(t(rec), mvfit$aov.tab[nrow(mvfit$aov.tab)-1,c(5,6)]))
-}
-
-## 4. Write output
-
-fwrite(out.df, file = out.f, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
+  fwrite(out.df, file = out.f, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
+} 
 
 #### END
 
