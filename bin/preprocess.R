@@ -50,8 +50,8 @@ if ( is.null(pheno.f) || is.null(geno.f) || is.null(cov.f) ||
 pheno.df <- fread(pheno.f, header = TRUE, data.table = FALSE, sep = "\t")
 cov.df <- fread(cov.f, header = TRUE, data.table = FALSE, sep = "\t")
 colnames(pheno.df)[1] <- colnames(cov.df)[1] <- "ID" 
-rownames(pheno.df) <- pheno.df$ID 
-rownames(cov.df) <- cov.df$ID
+rownames(pheno.df) <- as.character(pheno.df$ID)
+rownames(cov.df) <- as.character(cov.df$ID)
 pheno.df$ID <- cov.df$ID <- NULL
 
 geno.df <- fread(geno.f, skip = "#CHROM", nrows = 1, 
