@@ -18,6 +18,8 @@ option_list <- list(
                 help = "Genotype file (indexed VCF)", metavar = "FILE"),
     make_option(c("-r", "--region"), type = "character",
                 help = "Genomic region", metavar = "CHARACTER"),
+    make_option(c("-t", "--transform"), type = "character", default = 'none',
+                help = "Phenotype transformation: 'none', 'log', 'sqrt'"),
     make_option(c("-n",	"--min_nb_ind_geno"), type = "numeric", default = 10,
        	       	help = "Minimum number of individuals per genotype group"),
     make_option(c("-o", "--output"), type = "character",
@@ -153,7 +155,7 @@ if(any(snps.to.keep == "PASS")){
     rec <- snp[, !colnames(snp)%in%subset.ids]
     snp <- as.numeric(snp[, subset.ids])
     
-    mvfit <- tryCatch(mlm(as.matrix(pheno.df) ~ ., data = data.frame(cov.df, "GT" = snp), type = "I", subset = "GT"),
+    mvfit <- tryCatch(mlm(as.matrix(pheno.df) ~ ., data = data.frame(cov.df, "GT" = snp), type = "I", subset = "GT", transform = opt$transform),
                       error = function(e) NULL)
     if(is.null(mvfit)){
       warning(sprintf("SNP %s skipped",  subset(geno.df, pos == p)$variant))
