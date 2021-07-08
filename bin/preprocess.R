@@ -54,7 +54,7 @@ rownames(pheno.df) <- as.character(pheno.df$ID)
 rownames(cov.df) <- as.character(cov.df$ID)
 pheno.df$ID <- cov.df$ID <- NULL
 
-geno.df <- fread(geno.f, skip = "#CHROM", nrows = 1, 
+geno.df <- fread(cmd = sprintf("zcat %s | head -n 10000", geno.f), skip = "#CHROM", nrows = 1,
                  data.table = FALSE, header = TRUE, check.names = FALSE)
 
 subset.ids <- Reduce(intersect, list(colnames(geno.df),
