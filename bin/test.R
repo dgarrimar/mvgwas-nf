@@ -19,12 +19,17 @@ option_list <- list(
     make_option(c("-r", "--region"), type = "character",
                 help = "Genomic region", metavar = "CHARACTER"),
     make_option(c("-t", "--transform"), type = "character", default = 'none',
-                help = "Phenotype transformation: 'none', 'log', 'sqrt'"),
+                help = "Phenotype transformation: 'none', 'log', 'sqrt' [default %default]",
+                metavar = "CHARACTER"),
+    make_option(c("-i", "--interaction"), type = "character", default = 'none',
+                help = "Test for interaction with a covariate [default %default]",
+                metavar = "CHARACTER"),
     make_option(c("-n",	"--min_nb_ind_geno"), type = "numeric", default = 10,
-       	       	help = "Minimum number of individuals per genotype group"),
+       	       	help = "Minimum number of individuals per genotype group [default %default]",
+                metavar = "NUMERIC"),
     make_option(c("-o", "--output"), type = "character",
                 help = "Output summary stats", metavar = "FILE"),
-    make_option(c("-s", "--seed"), type = "numeric", help = "Set seed for random processes",
+    make_option(c("-s", "--seed"), type = "numeric", help = "Set seed for random processes [default %default]",
                 metavar = "NUMERIC", default = 123),
     make_option(c("-v", "--verbose"), action = "store_true", 
                 help = "[default %default]", 
@@ -150,18 +155,38 @@ if(opt$verbose){
 if(any(snps.to.keep == "PASS")){
   geno.df <- geno.df[snps.to.keep == "PASS", ]
   out.df <- c()
-  for (p in geno.df$pos){
-    snp <- subset(geno.df, pos == p)
-    rec <- snp[, !colnames(snp)%in%subset.ids]
-    snp <- as.numeric(snp[, subset.ids])
-    
-    mvfit <- tryCatch(mlm(as.matrix(pheno.df) ~ ., data = data.frame(cov.df, "GT" = snp), type = "I", subset = "GT", transform = opt$transform),
-                      error = function(e) NULL)
-    if(is.null(mvfit)){
-      warning(sprintf("SNP %s skipped",  subset(geno.df, pos == p)$variant))
-      next
+  Y <- as.matrix(pheno.df)
+  if (opt$interaction == "none"){
+    for (p in geno.df$pos){
+      snp <- subset(geno.df, pos == p)
+      rec <- snp[, !colnames(snp)%in%subset.ids]
+      snp <- as.numeric(snp[, subset.ids])
+      
+      mvfit <- tryCatch(mlm(Y ~ ., data = data.frame(cov.df, "GT" = snp), type = "I", subset = "GT", transform = opt$transform),
+                        error = function(e) NULL)
+      if(is.null(mvfit)){
+        warning(sprintf("SNP %s skipped",  subset(geno.df, pos == p)$variant))
+        next
+      }
+      out.df <- rbind(out.df, c(t(rec), mvfit$aov.tab[1, 5:6]))
     }
-    out.df <- rbind(out.df, c(t(rec), mvfit$aov.tab[nrow(mvfit$aov.tab)-1,c(5,6)]))
+  } else {
+    INT <- paste0(opt$interaction, ":GT")
+    for (p in geno.df$pos){
+      snp <- subset(geno.df, pos == p)
+      rec <- snp[, !colnames(snp)%in%subset.ids]
+      snp <- as.numeric(snp[, subset.ids])
+      Data <- data.frame(cov.df, "GT" = snp)
+      fm <- as.formula(paste("Y ~", paste0(c(colnames(Data), INT), collapse = "+")))
+      mvfit <- tryCatch(mlm(fm,  data = data.frame(cov.df, "GT" = snp), type = "II", transform = opt$transform, 
+                            subset = c(opt$interaction, "GT", INT)),
+                        error = function(e) NULL)
+      if(is.null(mvfit)){
+        warning(sprintf("SNP %s skipped",  subset(geno.df, pos == p)$variant))
+        next
+      }
+      out.df <- rbind(out.df, c(t(rec), mvfit$aov.tab[1:3, 5:6]))
+    }
   }
   fwrite(out.df, file = out.f, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
 } 
