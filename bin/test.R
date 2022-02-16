@@ -5,7 +5,7 @@
 library(optparse)
 library(data.table)
 library(seqminer)
-library(mlm)
+library(manta)
   
 option_list <- list(
     make_option(c("-p", "--phenotypes"), type = "character", 
@@ -162,7 +162,7 @@ if(any(snps.to.keep == "PASS")){
       rec <- snp[, !colnames(snp)%in%subset.ids]
       snp <- as.numeric(snp[, subset.ids])
       
-      mvfit <- tryCatch(mlm(Y ~ ., data = data.frame(cov.df, "GT" = snp), type = "I", subset = "GT", transform = opt$transform),
+      mvfit <- tryCatch(manta(Y ~ ., data = data.frame(cov.df, "GT" = snp), type = "I", subset = "GT", transform = opt$transform),
                         error = function(e) NULL)
       if(is.null(mvfit)){
         warning(sprintf("SNP %s skipped",  subset(geno.df, pos == p)$variant))
@@ -178,7 +178,7 @@ if(any(snps.to.keep == "PASS")){
       snp <- as.numeric(snp[, subset.ids])
       Data <- data.frame(cov.df, "GT" = snp)
       fm <- as.formula(paste("Y ~", paste0(c(colnames(Data), INT), collapse = "+")))
-      mvfit <- tryCatch(mlm(fm,  data = data.frame(cov.df, "GT" = snp), type = "II", transform = opt$transform, 
+      mvfit <- tryCatch(manta(fm,  data = data.frame(cov.df, "GT" = snp), type = "II", transform = opt$transform, 
                             subset = c(opt$interaction, "GT", INT)),
                         error = function(e) NULL)
       if(is.null(mvfit)){

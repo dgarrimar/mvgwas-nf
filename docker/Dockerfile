@@ -37,9 +37,6 @@ RUN R -e 'install.packages("lme4", repos="http://cloud.r-project.org/");'\
 'install.packages("https://cran.r-project.org/src/contrib/Archive/pbkrtest/pbkrtest_0.4-7.tar.gz", repos=NULL, type="source");'\
 'install.packages(c("devtools", "optparse", "data.table", "seqminer", "vegan", "car", "R.utils"), repos="http://cloud.r-project.org/")'
 
-## Install mlm
-RUN R -e 'devtools:::install_github("dgarrimar/mlm")'
-
 ## Install bcftools and HTSlib
 RUN wget --quiet https://github.com/samtools/bcftools/releases/download/1.10.2/bcftools-1.10.2.tar.bz2 \
     && tar jxf bcftools-1.10.2.tar.bz2 \
@@ -52,6 +49,9 @@ RUN cd bcftools-1.10.2/htslib-1.10.2 \
     && ./configure \
     && make \
     && make install
+
+## Install MANTA
+RUN R -e 'devtools:::install_github("dgarrimar/manta")'
 
 ## Change ENTRYPOINT
 ENTRYPOINT /bin/bash

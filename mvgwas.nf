@@ -1,13 +1,26 @@
 /*
- * Multivariate Genome Wide Association Studies (MVGWAS) 
- * Diego Garrido Martín 
+ * Copyright (c) 2021, Diego Garrido-Martín
+ *
+ * This file is part of 'mvgwas-nf':
+ * A Nextflow pipeline for multivariate GWAS using MANTA
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- *  Define parameters
- */
 
-// General params
+// Define parameters
+
 params.pheno = null
 params.geno = null
 params.cov = null
@@ -19,15 +32,14 @@ params.dir = 'result'
 params.out = 'mvgwas.tsv'
 params.help = false
 
-/*
- *  Print usage and help
- */
+
+// Print usage
 
 if (params.help) {
   log.info ''
-  log.info 'Multivariate Genome-Wide Association Studies (MVGWAS)'
-  log.info '======================================================================='
-  log.info 'Performs multivariate GWAS given a set of phenotypes and genotypes'
+  log.info 'Multivariate Genome-Wide Association Studies with MANTA'
+  log.info '=============================================================================================='
+  log.info 'Performs multivariate GWAS using MANTA given a set of phenotypes and genotypes'
   log.info ''
   log.info 'Usage: '
   log.info '    nextflow run mvgwas.nf [options]'
@@ -46,9 +58,8 @@ if (params.help) {
   exit(1)
 }
 
-/*
- * Check mandatory parameters
- */
+
+// Check mandatory parameters
 
 if (!params.pheno) {
     exit 1, "Phenotype file not specified."
@@ -60,9 +71,7 @@ if (!params.pheno) {
 }
 
 
-/*
- *  Print parameter selection
- */
+// Print parameter selection
 
 log.info ''
 log.info 'Parameters'
@@ -79,9 +88,7 @@ log.info "Output file                  : ${params.out}"
 log.info ''
 
 
-/*
- *  Split VCF
- */
+// Split VCF
 
 process split {
  
@@ -101,9 +108,8 @@ process split {
     """
 }
 
-/*
- *  Pre-process phenotypes and covariates
- */
+
+// Pre-process phenotypes and covariates
 
 process preprocess {
 
@@ -123,9 +129,8 @@ process preprocess {
     """
 }
 
-/*
- *  GWAS: mlm testing
- */
+
+// GWAS: testing (MANTA)
 
 process mvgwas {
 
@@ -160,9 +165,8 @@ process mvgwas {
 
 sstats_ch.collectFile(name: "${params.out}", sort: { it.name }).set{pub_ch}
 
-/*
- * Summary stats
- */
+
+// Summary stats
 
 process end {
 
