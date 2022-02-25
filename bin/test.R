@@ -167,7 +167,7 @@ if(any(snps.to.keep == "PASS")){
                 warning(sprintf("SNP %s skipped",  subset(geno.df, pos == p)$variant))
                 next
             }
-            out.df <- rbind(out.df, c(t(rec), mvfit$aov.tab[1, 5:6]))
+            out.df <- rbind(out.df, c(t(rec), mvfit$aov.tab[1, 4:6]))
         }
     } else {
         INT <- paste0(opt$interaction, ":GT")
@@ -184,7 +184,7 @@ if(any(snps.to.keep == "PASS")){
                 warning(sprintf("SNP %s skipped",  subset(geno.df, pos == p)$variant))
                 next
             }
-            out.df <- rbind(out.df, c(t(rec), mvfit$aov.tab[1:3, 5:6]))
+            out.df <- rbind(out.df, c(t(rec), mvfit$aov.tab[1:3, 4:6]))
         }
     }
     fwrite(out.df, file = out.f, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
