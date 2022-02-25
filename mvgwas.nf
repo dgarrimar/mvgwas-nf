@@ -36,26 +36,26 @@ params.help = false
 // Print usage
 
 if (params.help) {
-  log.info ''
-  log.info 'Multivariate Genome-Wide Association Studies with MANTA'
-  log.info '=============================================================================================='
-  log.info 'Performs multivariate GWAS using MANTA given a set of phenotypes and genotypes'
-  log.info ''
-  log.info 'Usage: '
-  log.info '    nextflow run mvgwas.nf [options]'
-  log.info ''
-  log.info 'Parameters:'
-  log.info ' --pheno PHENOTYPES          phenotype file (default: phenotypes.tsv)'
-  log.info ' --geno GENOTYPES            indexed genotype VCF file (default: genotypes.vcf.gz)'
-  log.info ' --cov COVARIATES            covariate file (default: covariates.tsv)'
-  log.info ' --l VARIANTS/CHUNK          variants tested per chunk (default: 10000)'
-  log.info ' --t TRANSFOMATION           phenotype transformation: none, sqrt, log (default: none)'
-  log.info ' --i INTERACTION             test for interaction with a covariate (default: none)'
-  log.info ' --ng INDIVIDUALS/GENOTYPE   minimum number of individuals per genotype group (default: 10)'        
-  log.info ' --dir DIRECTORY             output directory (default: result)'
-  log.info ' --out OUTPUT                output file (default: mvgwas.tsv)'
-  log.info ''
-  exit(1)
+    log.info ''
+    log.info 'mvgwas-nf: A pipeline for multivariate Genome-Wide Association Studies'
+    log.info '=============================================================================================='
+    log.info 'Performs multi-trait GWAS using using MANTA (https://github.com/dgarrimar/manta)'
+    log.info ''
+    log.info 'Usage: '
+    log.info '    nextflow run mvgwas.nf [options]'
+    log.info ''
+    log.info 'Parameters:'
+    log.info ' --pheno PHENOTYPES          phenotype file'
+    log.info ' --geno GENOTYPES            indexed genotype VCF file'
+    log.info ' --cov COVARIATES            covariate file'
+    log.info ' --l VARIANTS/CHUNK          variants tested per chunk (default: 10000)'
+    log.info ' --t TRANSFOMATION           phenotype transformation: none, sqrt, log (default: none)'
+    log.info ' --i INTERACTION             test for interaction with a covariate: none, <covariate> (default: none)'
+    log.info ' --ng INDIVIDUALS/GENOTYPE   minimum number of individuals per genotype group (default: 10)'        
+    log.info ' --dir DIRECTORY             output directory (default: result)'
+    log.info ' --out OUTPUT                output file (default: mvgwas.tsv)'
+    log.info ''
+    exit(1)
 }
 
 
@@ -170,22 +170,22 @@ sstats_ch.collectFile(name: "${params.out}", sort: { it.name }).set{pub_ch}
 
 process end {
 
-   publishDir "${params.dir}", mode: 'copy'     
+    publishDir "${params.dir}", mode: 'copy'     
 
-   input:
-   file(out) from pub_ch
+    input:
+    file(out) from pub_ch
 
-   output:
-   file(out) into end_ch
+    output:
+    file(out) into end_ch
 
-   script:
-   if(params.i == 'none')
-   """
-   sed -i "1 s/^/chr\tpos\tsnp\tREF\tALT\tF\tr2\tpv\\n/" ${out}
-   """
-   else
-   """
-   sed -i "1 s/^/CHR\tPOS\tID\tREF\tALT\tF($params.i)\tF(GT)\tF(${params.i}:GT)\tr2($params.i)\tr2(GT)\tr2(${params.i}:GT)\tpv($params.i)\tpv(GT)\tpv(${params.i}:GT)\\n/" ${out}
-   """
+    script:
+    if(params.i == 'none')
+    """
+    sed -i "1 s/^/chr\tpos\tsnp\tREF\tALT\tF\tr2\tpv\\n/" ${out}
+    """
+    else
+    """
+    sed -i "1 s/^/CHR\tPOS\tID\tREF\tALT\tF($params.i)\tF(GT)\tF(${params.i}:GT)\tr2($params.i)\tr2(GT)\tr2(${params.i}:GT)\tpv($params.i)\tpv(GT)\tpv(${params.i}:GT)\\n/" ${out}
+    """
 }
 
