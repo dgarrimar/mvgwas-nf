@@ -93,13 +93,13 @@ Example [data](data) is available for the test run.
 
 An output text file containing the multi-trait GWAS summary statistics (default: `./result/mvgwas.tsv`), with the following information:
 
-* `chr`: chromosome
-* `pos`: position
-* `snp`: variant ID
+* `CHR`: chromosome
+* `POS`: position
+* `ID`: variant ID
 * `REF`: reference allele
 * `ALT`: alternative allele
 * `F`: pseudo-F statistic
-* `r2`: fraction of variance explained by the variant
-* `pv`: P-value
+* `R2`: fraction of variance explained by the variant
+* `P`: P-value
 
 The output folder and file names can be modified with the `--dir` and `--out` parameters, respectively.

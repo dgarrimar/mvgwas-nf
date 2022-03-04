@@ -181,11 +181,11 @@ process end {
     script:
     if(params.i == 'none')
     """
-    sed -i "1 s/^/chr\tpos\tsnp\tREF\tALT\tF\tr2\tpv\\n/" ${out}
+    sed -i "1 s/^/CHR\tPOS\tID\tREF\tALT\tF\tR2\tP\\n/" ${out}
     """
     else
     """
-    sed -i "1 s/^/CHR\tPOS\tID\tREF\tALT\tF($params.i)\tF(GT)\tF(${params.i}:GT)\tr2($params.i)\tr2(GT)\tr2(${params.i}:GT)\tpv($params.i)\tpv(GT)\tpv(${params.i}:GT)\\n/" ${out}
+    sed -i "1 s/^/CHR\tPOS\tID\tREF\tALT\tF($params.i)\tF(GT)\tF(${params.i}:GT)\tR2($params.i)\tR2(GT)\tR2(${params.i}:GT)\tP($params.i)\tP(GT)\tP(${params.i}:GT)\\n/" ${out}
     """
 }
 
