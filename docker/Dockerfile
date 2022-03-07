@@ -2,18 +2,19 @@ FROM rocker/r-ver:3.5.2
 
 LABEL maintainer "Diego Garrido-Martín <diego.garrido@crg.eu>" \
       version "1.0.0" \
-      description "Docker image for manta-nf"
+      description "Docker image for mvgwas-nf"
 
 RUN apt-get update --fix-missing -qq && apt-get install -y -q \
-# devtools dependencies
-       libcurl4-openssl-dev \
+# R:devtools dependencies
+       libcurl4-gnutls-dev \
        libssl1.0-dev \
        libssh2-1-dev \
        libxml2-dev \
        zlib1g-dev \
-# car
-       libnlopt-dev \
+       libgit2-dev \
        pkg-config \
+# R:car
+       libnlopt-dev \
 # bcftools dependencies
        libbz2-dev \
        liblzma-dev \
@@ -21,7 +22,6 @@ RUN apt-get update --fix-missing -qq && apt-get install -y -q \
        procps \
 # other
        wget \
-       git \
     && apt-get clean \
     && apt-get purge \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

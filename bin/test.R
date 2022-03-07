@@ -80,8 +80,8 @@ tabix.read.table.nochecknames <- function (tabixFile, tabixRange,
 }
 
 check.genotype <- function(geno.df, min.nb.ind.geno = 10) {
-    apply(geno.df, 1, function(geno.snp){
-        if(sum(is.na(geno.snp)) > 0.05*length(as.numeric(geno.snp))){
+    apply(geno.df, 1, function(geno.snp) {
+        if (sum(is.na(geno.snp)) > 0.05*length(as.numeric(geno.snp))) {
             return("Missing genotype in > 5% individuals")
         }
         geno.snp.t <- table(geno.snp[!is.na(geno.snp)])
@@ -105,8 +105,8 @@ region <- opt$region
 
 set.seed(opt$seed)
 
-if ( is.null(pheno.f) || is.null(geno.f) || is.null(cov.f) || is.null(region) || 
-     is.null(out.f) ){
+if (is.null(pheno.f) || is.null(geno.f) || is.null(cov.f) || is.null(region) || 
+    is.null(out.f)) {
     print_help(opt_parser)
     stop("Missing/not found I/O files", call.= FALSE)
 }
@@ -145,25 +145,25 @@ geno.df[, -c(1:5)] <- apply(geno.df[, -c(1:5)], 2, function(x){
 ## 3. Filter SNPs
 snps.to.keep <- check.genotype(geno.df[, subset.ids], min.nb.ind.geno = opt$min_nb_ind_geno)
 
-if(opt$verbose){
+if (opt$verbose) {
     snps.to.keep.t <- table(snps.to.keep)
     message("\t", paste(names(snps.to.keep.t), snps.to.keep.t, sep = ": ", collapse=", "))
 }
 
 ## 4. Test & write output
-if(any(snps.to.keep == "PASS")){
+if (any(snps.to.keep == "PASS")) {
     geno.df <- geno.df[snps.to.keep == "PASS", ]
     out.df <- c()
     Y <- as.matrix(pheno.df)
-    if (opt$interaction == "none"){
-        for (p in geno.df$pos){
+    if (opt$interaction == "none") {
+        for (p in geno.df$pos) {
             snp <- subset(geno.df, pos == p)
             rec <- snp[, !colnames(snp)%in%subset.ids]
             snp <- as.numeric(snp[, subset.ids])
               
             mvfit <- tryCatch(manta(Y ~ ., data = data.frame(cov.df, "GT" = snp), type = "I", subset = "GT", transform = opt$transform),
                                 error = function(e) NULL)
-            if(is.null(mvfit)){
+            if (is.null(mvfit)) {
                 warning(sprintf("SNP %s skipped",  subset(geno.df, pos == p)$variant))
                 next
             }
@@ -171,7 +171,7 @@ if(any(snps.to.keep == "PASS")){
         }
     } else {
         INT <- paste0(opt$interaction, ":GT")
-        for (p in geno.df$pos){
+        for (p in geno.df$pos) {
             snp <- subset(geno.df, pos == p)
             rec <- snp[, !colnames(snp)%in%subset.ids]
             snp <- as.numeric(snp[, subset.ids])
@@ -180,7 +180,7 @@ if(any(snps.to.keep == "PASS")){
             mvfit <- tryCatch(manta(fm,  data = data.frame(cov.df, "GT" = snp), type = "II", transform = opt$transform, 
                                     subset = c(opt$interaction, "GT", INT)),
                               error = function(e) NULL)
-            if(is.null(mvfit)){
+            if (is.null(mvfit)) {
                 warning(sprintf("SNP %s skipped",  subset(geno.df, pos == p)$variant))
                 next
             }

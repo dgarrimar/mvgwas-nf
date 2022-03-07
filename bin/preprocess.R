@@ -42,7 +42,7 @@ out_cov.f <- opt$out_cov
 set.seed(opt$seed)
 
 if ( is.null(pheno.f) || is.null(geno.f) || is.null(cov.f) || 
-     is.null(out_pheno.f) || is.null(out_cov.f) ){
+     is.null(out_pheno.f) || is.null(out_cov.f)) {
     print_help(opt_parser)
     stop("Missing/not found I/O files")
 }
@@ -70,18 +70,18 @@ cov.df <- cov.df[subset.ids, , drop = FALSE]
 ## 3. Pre-process phenotypes
 
 all.na <- unlist(lapply(pheno.df, function(x){all(is.na(x))}))
-if (opt$verbose && sum(all.na) > 0){
+if (opt$verbose && sum(all.na) > 0) {
     warning(sprintf("Phenotypes with NA values for all individuals were removed: %s",
                     paste(names(which(all.na)), collapse = ", ")))
 }
 
 pheno.na <- apply(pheno.df, 1, function(x){any(is.na(x))})
-if(sum(pheno.na) / nrow(pheno.df) > 0.05){
+if (sum(pheno.na) / nrow(pheno.df) > 0.05) {
     stop("More than 5% of the individuals contain NA values for at least one phenotype")  
 }
 
 allzero <- apply(pheno.df, 2, function(x){ all(x < min.val) })
-if (any(allzero)){
+if (any(allzero)) {
     out <- names(which(allzero))
     pheno.df <- pheno.df[, !colnames(pheno.df)%in%out]
     warning(sprintf("Phenotype(s) %s is(are) removed due to value < %s in all common individuals", 
@@ -91,17 +91,17 @@ if (any(allzero)){
 ## 4. Pre-process covariates
 
 all.na <- unlist(lapply(cov.df, function(x){all(is.na(x))}))
-if (opt$verbose && sum(all.na) > 0){
+if (opt$verbose && sum(all.na) > 0) {
     warning(sprintf("Covariates with NA values for all individuals were removed: %s",
                     paste(names(which(all.na)), collapse = ", ")))
 }
 
 cov.df <- cov.df[, !all.na, drop = FALSE]
-for(i in 1:ncol(cov.df)){
+for (i in 1:ncol(cov.df)) {
     typ <- class(cov.df[, i])
-    if(typ == "character"){
+    if (typ == "character") {
         cov.df[, i] <- as.factor(cov.df[, i])
-    } else if (typ == "numeric" || typ == "integer"){
+    } else if (typ == "numeric" || typ == "integer") {
         next
     } else {
         stop ("Covariates should be either 'numeric' or 'character'")
@@ -115,25 +115,25 @@ if (opt$verbose) {
 }
 
 cov.na <- apply(cov.df, 1, function(x){any(is.na(x))})
-if(sum(cov.na) / nrow(cov.df) > 0.05){
+if (sum(cov.na) / nrow(cov.df) > 0.05) {
     stop("More than 5% of the individuals contain NA values for at least one covariate")  
 }
 
 multiclass <- apply(cov.df, 2, function(x){length(table(x)) > 1})
 cov.df <- cov.df[, multiclass, drop = FALSE]
 
-if (opt$verbose && any(!multiclass)){
+if (opt$verbose && any(!multiclass)) {
     message("\t", "Covariates removed due to only one value: ",
             paste(names(multiclass)[!multiclass], collapse = ", "))
 }
 
-if (ncol(cov.df) > 1){
+if (ncol(cov.df) > 1) {
     vifs <- car::vif(lm(pheno.df[, 1] ~ ., data = cov.df))
-    if (opt$verbose){
+    if (opt$verbose) {
         message("\t", "Covariates VIF - ", 
                 paste(names(vifs), round(vifs, 2), sep = ": ", collapse = ", "))
     }
-    if (any(vifs > 5)){
+    if (any(vifs > 5)) {
         warning("Check multicollinearity. VIF > 5 for some covariates:", "\n",
                 paste(names(vifs), round(vifs, 2), sep = ": ", collapse = ", "))
     }  

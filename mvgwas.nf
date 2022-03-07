@@ -63,10 +63,10 @@ if (params.help) {
 
 if (!params.pheno) {
     exit 1, "Phenotype file not specified."
-} else if (!params.geno){
+} else if (!params.geno) {
     params.help
     exit 1, "Genotype not specified."
-} else if (!params.cov){
+} else if (!params.cov) {
     exit 1, "Covariate file not specified."
 }
 
@@ -179,7 +179,7 @@ process end {
     file(out) into end_ch
 
     script:
-    if(params.i == 'none')
+    if (params.i == 'none')
     """
     sed -i "1 s/^/CHR\tPOS\tID\tREF\tALT\tF\tR2\tP\\n/" ${out}
     """
