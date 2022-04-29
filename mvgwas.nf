@@ -48,12 +48,12 @@ if (params.help) {
     log.info ' --pheno PHENOTYPES          phenotype file'
     log.info ' --geno GENOTYPES            indexed genotype VCF file'
     log.info ' --cov COVARIATES            covariate file'
-    log.info ' --l VARIANTS/CHUNK          variants tested per chunk (default: 10000)'
-    log.info ' --t TRANSFOMATION           phenotype transformation: none, sqrt, log (default: none)'
-    log.info ' --i INTERACTION             test for interaction with a covariate: none, <covariate> (default: none)'
-    log.info ' --ng INDIVIDUALS/GENOTYPE   minimum number of individuals per genotype group (default: 10)'        
-    log.info ' --dir DIRECTORY             output directory (default: result)'
-    log.info ' --out OUTPUT                output file (default: mvgwas.tsv)'
+    log.info " --l VARIANTS/CHUNK          variants tested per chunk (default: $params.l)"
+    log.info " --t TRANSFOMATION           phenotype transformation: none, sqrt, log (default: $params.t)"
+    log.info " --i INTERACTION             test for interaction with a covariate: none, <covariate> (default: $params.i)"
+    log.info " --ng INDIVIDUALS/GENOTYPE   minimum number of individuals per genotype group (default: $params.ng)"
+    log.info " --dir DIRECTORY             output directory (default: $params.dir)"
+    log.info " --out OUTPUT                output file (default: $params.out)"
     log.info ''
     exit(1)
 }
