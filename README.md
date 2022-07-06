@@ -103,3 +103,9 @@ An output text file containing the multi-trait GWAS summary statistics (default:
 * `P`: P-value
 
 The output folder and file names can be modified with the `--dir` and `--out` parameters, respectively.
+
+## Cite mvgwas-nf
+
+If you find `mvgwas-nf` useful in your research please cite the related publication:
+
+Garrido-Martín, D., Calvo, M., Reverter, F., Guigó, R. A fast non-parametric test of association for multiple traits. *bioRxiv* (2022). [https://doi.org/10.1101/2022.06.06.493041](https://doi.org/10.1101/2022.06.06.493041)
