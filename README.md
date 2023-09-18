@@ -1,7 +1,7 @@
 # mvgwas-nf
 
 [![nextflow](https://img.shields.io/badge/nextflow-%E2%89%A520.04.1-blue.svg)](http://nextflow.io)
-[![CI-checks](https://github.com/guigolab/sqtlseeker2-nf/actions/workflows/ci.yaml/badge.svg)](https://github.com/guigolab/sqtlseeker2-nf/actions/workflows/ci.yaml)
+[![CI-checks](https://github.com/dgarrimar/mvgwas-nf/actions/workflows/ci.yaml/badge.svg)](https://github.com/dgarrimar/mvgwas-nf/actions/workflows/ci.yaml)
 
 A pipeline for multi-trait genome-wide association studies (GWAS) using [MANTA](https://github.com/dgarrimar/manta).
 
